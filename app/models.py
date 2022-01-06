@@ -13,12 +13,17 @@ Column: t.Type[SAColumn] = functools.partial(SAColumn, nullable=False)
 
 
 class BaseModel(db.Model):
+    """
+    Base model for all model classes.
+    Automatically adds created_at and modified_at columns.
+    """
     __abstract__ = True
 
     created_at = Column(db.DateTime, index=True, default=db.func.now())
     modified_at = Column(db.DateTime, default=db.func.now(), onupdate=db.func.now(), nullable=True)
 
 
+"""M2M relationship table between Candidate and Skill."""
 candidate_skills = db.Table('candidate_skills',
     db.Column('candidate_id', db.Integer, db.ForeignKey('candidate.id'), primary_key=True),
     db.Column('skill_id', db.Integer, db.ForeignKey('skill.id'), primary_key=True)
@@ -26,6 +31,7 @@ candidate_skills = db.Table('candidate_skills',
 
 
 class Candidate(BaseModel):
+    """A candidate for a job."""
     id = Column(db.Integer, primary_key=True)
     first_name = Column(db.String(40))
     surname = Column(db.String(40))
@@ -41,6 +47,7 @@ class Candidate(BaseModel):
 
 
 class Skill(BaseModel):
+    """A skill that a candidate can have."""
     id = Column(db.Integer, primary_key=True)
     name = Column(db.String(60))
 
@@ -49,6 +56,7 @@ class Skill(BaseModel):
 
 
 class JobAdvertisement(BaseModel):
+    """A job advertisement that candidates can apply for."""
     id = Column(db.Integer, primary_key=True)
     title = Column(db.String(60))
     salary_min = Column(db.Integer)
