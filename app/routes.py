@@ -17,7 +17,6 @@ def test():
 @app.route('/candidates', methods=['POST'])
 def create_candidate():
     """Create a new candidate and return it."""
-
     if (data := request.get_json()) is None:
         return error_response(400, "No input data provided.")
 
@@ -43,7 +42,6 @@ def read_all_candidates():
 @app.route('/candidates/<int:candidate_id>', methods=['GET'])
 def read_candidate(candidate_id: int):
     """Get candidate by ID."""
-
     candidate = Candidate.query.get(candidate_id)
     # todo: error_response
 
