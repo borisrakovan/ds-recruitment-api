@@ -8,7 +8,7 @@ from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 
 from config import Config
-from app.utils import safe_makedir
+from app import utils
 
 
 """Initialize plugins"""
@@ -26,7 +26,7 @@ def create_app(config_class=Config):
     ma.init_app(app)
     migrate.init_app(app, db)
 
-    safe_makedir(app.config["LOG_DIR"])
+    utils.safe_make_dir(app.config["LOG_DIR"])
 
     if not app.debug and app.testing:
         # logging to file

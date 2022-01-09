@@ -1,7 +1,7 @@
 import typing as t
 
 
-def safe_makedir(path: str) -> None:
+def safe_make_dir(path: str) -> None:
     """Make a directory if it doesn't exist, handling concurrent creation."""
     import os
     import errno

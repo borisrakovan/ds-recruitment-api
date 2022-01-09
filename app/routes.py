@@ -1,10 +1,10 @@
 from flask import jsonify, request
+from marshmallow import ValidationError
 
 from app.schema import candidate_schema, candidates_schema, advertisement_schema, advertisements_schema, \
     applications_schema
-from app.utils import update_object_from_dict
+from app import utils
 from ds_recruitment_api import app
-from marshmallow import ValidationError
 
 from app import db
 from app.errors import error_response
@@ -75,7 +75,7 @@ def update_candidate(candidate_id: int):
     if 'id' in data:
         del data['id']
 
-    obj_changed = update_object_from_dict(candidate, data)
+    obj_changed = utils.update_object_from_dict(candidate, data)
     if obj_changed:
         db.session.commit()
 
@@ -157,7 +157,7 @@ def update_advertisement(advertisement_id: int):
     if 'id' in data:
         del data['id']
 
-    obj_changed = update_object_from_dict(advertisement, data)
+    obj_changed = utils.update_object_from_dict(advertisement, data)
     if obj_changed:
         db.session.commit()
 
