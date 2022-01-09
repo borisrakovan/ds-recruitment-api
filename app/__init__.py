@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 
-from app.config import Config
+from config import Config
 from app.utils import safe_makedir
 
 
@@ -37,8 +37,8 @@ def create_app(config_class=Config):
             stream_handler.setLevel(logging.INFO)
             app.logger.addHandler(stream_handler)
         else:
-            if not os.path.exists('logs'):
-                os.mkdir('logs')
+            if not os.path.exists('../logs'):
+                os.mkdir('../logs')
             file_handler = RotatingFileHandler(
                 os.path.join(log_dir, 'ds_recruitment_api.log'),
                 maxBytes=10240,

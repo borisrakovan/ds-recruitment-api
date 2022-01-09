@@ -1,13 +1,14 @@
 from flask import jsonify, request
 
-from app.schema import candidate_schema, candidates_schema, advertisement_schema, advertisements_schema
+from app.schema import candidate_schema, candidates_schema, advertisement_schema, advertisements_schema, \
+    applications_schema
 from app.utils import update_object_from_dict
 from ds_recruitment_api import app
 from marshmallow import ValidationError
 
 from app import db
 from app.errors import error_response
-from app.models import Candidate, Skill, JobAdvertisement
+from app.models import Candidate, Skill, JobAdvertisement, JobApplication
 
 
 @app.route('/', methods=["GET"])
@@ -108,6 +109,9 @@ def create_advertisement():
     except ValidationError as err:
         return error_response(422, err.messages)
 
+    if data['salary_min'] > data['salary_max']:
+        return error_response(422, "Salary min must be lower or equal to salary max.")
+
     advertisement = JobAdvertisement(**data)
     db.session.add(advertisement)
     db.session.commit()
@@ -171,3 +175,37 @@ def delete_advertisement(advertisement_id: int):
     db.session.delete(advertisement)
     db.session.commit()
     return '', 204
+
+
+"""Other endpoints"""
+
+
+@app.route('/advertisements/<int:advertisement_id>/apply', methods=['POST'])
+def apply_for_advertisement(advertisement_id: int):
+    """
+    Apply for an advertisement by ID.
+    Return the updated advertisement along with its candidates.
+    """
+    if (data := request.get_json()) is None:
+        return error_response(400, "No input data provided.")
+
+    if 'candidate_id' not in data:
+        return error_response(400, "Missing parameter: candidate_id.")
+
+    if (advertisement := JobAdvertisement.query.get(advertisement_id)) is None:
+        return error_response(404, "Advertisement not found.")
+
+    if (candidate := Candidate.query.get(data['candidate_id'])) is None:
+        return error_response(404, "Candidate not found.")
+
+    if candidate in advertisement.get_candidates():
+        return error_response(400, "Candidate already applied.")
+
+    application = JobApplication(candidate=candidate, advertisement=advertisement)
+    # advertisement.candidates.append(candidate)
+    db.session.add(application)
+    db.session.commit()
+
+    advertisement_dict = advertisement_schema.dump(advertisement)
+    advertisement_dict['applications'] = applications_schema.dump(advertisement.applications)
+    return {'advertisement': advertisement_dict}

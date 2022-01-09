@@ -38,12 +38,27 @@ class Candidate(BaseModel):
     email = Column(db.String(100))
     phone_number = Column(db.String(20), nullable=True)
     expected_salary = Column(db.Integer)
-    advertisement_id = Column(db.Integer, db.ForeignKey('job_advertisement.id'), nullable=True)
     skills = db.relationship('Skill', secondary=candidate_skills, lazy='dynamic',
                              backref=db.backref('candidates', lazy='dynamic'))
+    applications = db.relationship('JobApplication', lazy='dynamic', back_populates="candidate")
 
     def __repr__(self):
         return '<Candidate {} {}>'.format(self.first_name, self.surname)
+
+
+class JobApplication(BaseModel):
+    """
+    A m2m relationship between Job and Candidate representing a job application.
+    Created as a separate model class since it is likely to contain additional fields, such as application_status.
+    """
+    id = Column(db.Integer, primary_key=True)
+    candidate_id = Column(db.Integer, db.ForeignKey('candidate.id'))
+    advertisement_id = Column(db.Integer, db.ForeignKey('job_advertisement.id'))
+    candidate = db.relationship('Candidate', back_populates="applications")
+    advertisement = db.relationship('JobAdvertisement', back_populates="applications")
+
+    def __repr__(self):
+        return '<JobApplication {}>'.format(self.id)
 
 
 class Skill(BaseModel):
@@ -62,7 +77,11 @@ class JobAdvertisement(BaseModel):
     salary_min = Column(db.Integer)
     salary_max = Column(db.Integer)
     full_text = Column(db.Text)
-    candidates = db.relationship('Candidate', backref='advertisement', lazy=True)
+    applications = db.relationship('JobApplication',  lazy='dynamic', back_populates="advertisement")
 
     def __repr__(self):
         return '<JobAdvertisement {}>'.format(self.title)
+
+    def get_candidates(self):
+        """Returns a list of all candidates that applied for this job advertisement."""
+        return [a.candidate for a in self.applications.all()]
