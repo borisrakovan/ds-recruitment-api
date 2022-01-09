@@ -1,6 +1,7 @@
 from flask import jsonify, request
 
-from app.schema import candidate_schema, candidates_schema
+from app.schema import candidate_schema, candidates_schema, advertisement_schema
+from app.utils import update_object_from_dict
 from ds_recruitment_api import app
 from marshmallow import ValidationError
 
@@ -12,6 +13,9 @@ from app.models import Candidate, Skill, JobAdvertisement
 @app.route('/', methods=["GET"])
 def test():
     return f'Hi! Debug: {app.config["DEBUG"]}'
+
+
+"""Candidates"""
 
 
 @app.route('/candidates', methods=['POST'])
@@ -42,8 +46,9 @@ def read_all_candidates():
 @app.route('/candidates/<int:candidate_id>', methods=['GET'])
 def read_candidate(candidate_id: int):
     """Get candidate by ID."""
-    candidate = Candidate.query.get(candidate_id)
-    # todo: error_response
+
+    if (candidate := Candidate.query.get(candidate_id)) is None:
+        return error_response(404, "Candidate not found.")
 
     return {'candidate': candidate_schema.dump(candidate)}
 
@@ -62,12 +67,16 @@ def update_candidate(candidate_id: int):
     except ValidationError as err:
         return error_response(422, err.messages)
 
-    candidate = Candidate.query.get(candidate_id)
-    # todo: error_response
-    print(type(data))
-    candidate.name = data['name']
-    candidate.description = data['description']
-    db.session.commit()
+    if (candidate := Candidate.query.get(candidate_id)) is None:
+        return error_response(404, "Candidate not found.")
+
+    # ID is immutable, make sure we don't accidentally change it
+    if 'id' in data:
+        del data['id']
+
+    obj_changed = update_object_from_dict(candidate, data)
+    if obj_changed:
+        db.session.commit()
 
     return {'candidate': candidate_schema.dump(candidate)}
 
@@ -75,8 +84,15 @@ def update_candidate(candidate_id: int):
 @app.route('/candidates/<int:candidate_id>', methods=['DELETE'])
 def delete_candidate(candidate_id: int):
     """Delete candidate by ID."""
-    # todo
-    candidate = Candidate.query.get_or_404(candidate_id)
+    candidate = Candidate.query.get(candidate_id)
+
+    if candidate is None:
+        return error_response(404, "Candidate not found.")
+
     db.session.delete(candidate)
     db.session.commit()
     return '', 204
+
+
+"""Advertisements"""
+

@@ -8,14 +8,13 @@ class CandidateSchema(ma.SQLAlchemyAutoSchema):
         model = Candidate
         # fail-safe selection of model fields
         fields = ("id", "first_name", "surname", "email", "phone_number",
-                  "expected_salary", "skills", "advertisement",)
+                  "expected_salary", "advertisement",)
 
 
 class JobAdvertisementSchema(ma.SQLAlchemyAutoSchema):
     """Schema for the JobAdvertisement model."""
     class Meta:
         model = JobAdvertisement
-
         fields = ("id", "title", "salary_min", "salary_max", "full_text",)
 
 
