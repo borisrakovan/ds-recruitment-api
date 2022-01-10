@@ -8,6 +8,8 @@ I've used the following technologies:
 - [Flask](https://flask.palletsprojects.com/)
 - [SQLAlchemy](https://www.sqlalchemy.org/)
 - [SQLite](https://www.sqlite.org/)
+- [Marshmallow](https://marshmallow.readthedocs.io/) - validation and (de)serialization
+
 
 Although it is usually not the best practice, I decided to include the database file in the VCS so that it doesn't
 need to be created manually when testing the API. Also, it already contains some testing entities that I've created for 
