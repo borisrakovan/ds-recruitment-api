@@ -49,7 +49,7 @@ class Candidate(BaseModel):
 
 class JobApplication(BaseModel):
     """
-    A m2m relationship between Job and Candidate representing a job application.
+    A M2M relationship between Job and Candidate representing a job application.
     Created as a separate model class since it is likely to contain additional fields, such as application_status.
     """
     id = Column(db.Integer, primary_key=True)
@@ -69,6 +69,19 @@ class Skill(BaseModel):
 
     def __repr__(self):
         return '<Skill {}>'.format(self.name)
+
+    @classmethod
+    def bulk_get_or_create(cls, skill_names: t.List[str]) -> t.List['Skill']:
+        """
+        Get list of skill objects corresponding to passed skill_names, creating those that do not yet exist.
+        """
+        existing = cls.query.filter(cls.name.in_(skill_names)).all()
+        existing_names = [skill.name for skill in existing]
+
+        new_skills = [Skill(name=name) for name in set(skill_names) - set(existing_names)]
+        db.session.add_all(new_skills)
+
+        return existing + new_skills
 
 
 class JobAdvertisement(BaseModel):

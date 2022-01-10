@@ -1,5 +1,12 @@
 from app import ma
-from app.models import Candidate, JobAdvertisement, JobApplication
+from app.models import Candidate, JobAdvertisement, JobApplication, Skill
+
+
+class SkillSchema(ma.SQLAlchemyAutoSchema):
+    """Schema for the Skill model."""
+    class Meta:
+        model = Skill
+        fields = ("id", "name")
 
 
 class CandidateSchema(ma.SQLAlchemyAutoSchema):
@@ -8,10 +15,11 @@ class CandidateSchema(ma.SQLAlchemyAutoSchema):
         model = Candidate
         # fail-safe selection of model fields
         fields = ("id", "first_name", "surname", "email", "phone_number",
-                  "expected_salary", "advertisement",)
+                  "expected_salary", "advertisement", "skills")
 
     # override to include proper validation
     email = ma.Email(required=True)
+    skills = ma.Nested(SkillSchema, many=True)
 
 
 class JobAdvertisementSchema(ma.SQLAlchemyAutoSchema):
@@ -35,3 +43,4 @@ candidates_schema = CandidateSchema(many=True)
 advertisement_schema = JobAdvertisementSchema()
 advertisements_schema = JobAdvertisementSchema(many=True)
 applications_schema = JobApplicationSchema(many=True)
+skills_schema = SkillSchema(many=True)

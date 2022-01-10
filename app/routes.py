@@ -1,6 +1,5 @@
-from flask import jsonify, request
+from flask import request
 from marshmallow import ValidationError
-
 from app.schema import candidate_schema, candidates_schema, advertisement_schema, advertisements_schema, \
     applications_schema
 from app import utils, crud
@@ -12,8 +11,8 @@ from app.models import Candidate, Skill, JobAdvertisement, JobApplication
 
 
 @app.route('/', methods=["GET"])
-def test():
-    return f'Hi! Debug: {app.config["DEBUG"]}'
+def health():
+    return f'Hi! Datasentics recruitment API is live.'
 
 
 # Candidates
@@ -25,6 +24,15 @@ def create_candidate():
     if (data := request.get_json()) is None:
         return error_response(400, "No input data provided.")
 
+    if 'skills' not in data:
+        return error_response(422, "Missing parameter: 'skills'.")
+
+    skill_names = data['skills']
+    del data['skills']
+
+    if not isinstance(skill_names, list):
+        return error_response(422, "Parameter 'skills' must be a list.")
+
     try:
         data = candidate_schema.load(data)
     except ValidationError as err:
@@ -32,9 +40,14 @@ def create_candidate():
 
     candidate = Candidate(**data)
     db.session.add(candidate)
+
+    skills = Skill.bulk_get_or_create(skill_names)
+
+    candidate.skills.extend(skills)
     db.session.commit()
 
-    return {'result': candidate_schema.dump(candidate)}, 201
+    candidate_dict = candidate_schema.dump(candidate)
+    return {'result': candidate_dict}, 201
 
 
 @app.route('/candidates', methods=['GET'])
@@ -58,6 +71,15 @@ def update_candidate(candidate_id: int):
     if (data := request.get_json()) is None:
         return error_response(400, "No input data provided.")
 
+    if 'skills' not in data:
+        return error_response(422, "Missing parameter: 'skills'.")
+
+    skill_names = data['skills']
+    del data['skills']
+
+    if not isinstance(skill_names, list):
+        return error_response(422, "Parameter 'skills' must be a list.")
+
     try:
         data = candidate_schema.load(data)
     except ValidationError as err:
@@ -70,9 +92,12 @@ def update_candidate(candidate_id: int):
     if 'id' in data:
         del data['id']
 
-    obj_changed = utils.update_object_from_dict(candidate, data)
-    if obj_changed:
-        db.session.commit()
+    utils.update_object_from_dict(candidate, data)
+
+    skills = Skill.bulk_get_or_create(skill_names)
+    candidate.skills = skills
+
+    db.session.commit()
 
     return {'result': candidate_schema.dump(candidate)}
 
