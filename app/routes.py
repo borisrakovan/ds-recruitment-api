@@ -12,7 +12,7 @@ from app.models import Candidate, Skill, JobAdvertisement, JobApplication
 
 @app.route('/', methods=["GET"])
 def health():
-    return f'Hi! Datasentics recruitment API is live.'
+    return f'Hi! Datasentics recruitment API is live.', 200
 
 
 # Candidates
