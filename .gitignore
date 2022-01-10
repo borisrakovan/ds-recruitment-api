@@ -40,5 +40,3 @@ ds_recruitment_api.log*
 
 .idea/
 .env
-
-app.db
