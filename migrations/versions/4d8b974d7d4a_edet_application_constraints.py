@@ -1,8 +1,8 @@
-"""create tables
+"""edet application constraints
 
-Revision ID: 8af86ef9109a
+Revision ID: 4d8b974d7d4a
 Revises: 
-Create Date: 2022-01-09 13:34:57.519116
+Create Date: 2022-01-10 16:52:53.569730
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8af86ef9109a'
+revision = '4d8b974d7d4a'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -62,8 +62,8 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('candidate_id', sa.Integer(), nullable=False),
     sa.Column('advertisement_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['advertisement_id'], ['job_advertisement.id'], ),
-    sa.ForeignKeyConstraint(['candidate_id'], ['candidate.id'], ),
+    sa.ForeignKeyConstraint(['advertisement_id'], ['job_advertisement.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['candidate_id'], ['candidate.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_job_application_created_at'), 'job_application', ['created_at'], unique=False)

@@ -10,6 +10,9 @@ class CandidateSchema(ma.SQLAlchemyAutoSchema):
         fields = ("id", "first_name", "surname", "email", "phone_number",
                   "expected_salary", "advertisement",)
 
+    # override to include proper validation
+    email = ma.Email(required=True)
+
 
 class JobAdvertisementSchema(ma.SQLAlchemyAutoSchema):
     """Schema for the JobAdvertisement model."""
@@ -25,7 +28,8 @@ class JobApplicationSchema(ma.SQLAlchemyAutoSchema):
         fields = ("id", "candidate_id", "application_id")
 
 
-"""Schema object declarations"""
+# Schema object definitions
+
 candidate_schema = CandidateSchema()
 candidates_schema = CandidateSchema(many=True)
 advertisement_schema = JobAdvertisementSchema()

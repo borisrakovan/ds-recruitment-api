@@ -40,7 +40,8 @@ class Candidate(BaseModel):
     expected_salary = Column(db.Integer)
     skills = db.relationship('Skill', secondary=candidate_skills, lazy='dynamic',
                              backref=db.backref('candidates', lazy='dynamic'))
-    applications = db.relationship('JobApplication', lazy='dynamic', back_populates="candidate")
+    applications = db.relationship('JobApplication', lazy='dynamic', back_populates="candidate",
+                                   cascade="all, delete", passive_deletes=True)
 
     def __repr__(self):
         return '<Candidate {} {}>'.format(self.first_name, self.surname)
@@ -52,8 +53,8 @@ class JobApplication(BaseModel):
     Created as a separate model class since it is likely to contain additional fields, such as application_status.
     """
     id = Column(db.Integer, primary_key=True)
-    candidate_id = Column(db.Integer, db.ForeignKey('candidate.id'))
-    advertisement_id = Column(db.Integer, db.ForeignKey('job_advertisement.id'))
+    candidate_id = Column(db.Integer, db.ForeignKey('candidate.id', ondelete="CASCADE"))
+    advertisement_id = Column(db.Integer, db.ForeignKey('job_advertisement.id', ondelete="CASCADE"))
     candidate = db.relationship('Candidate', back_populates="applications")
     advertisement = db.relationship('JobAdvertisement', back_populates="applications")
 
@@ -77,7 +78,8 @@ class JobAdvertisement(BaseModel):
     salary_min = Column(db.Integer)
     salary_max = Column(db.Integer)
     full_text = Column(db.Text)
-    applications = db.relationship('JobApplication',  lazy='dynamic', back_populates="advertisement")
+    applications = db.relationship('JobApplication',  lazy='dynamic', back_populates="advertisement",
+                                   cascade="all, delete-orphan", passive_deletes=True)
 
     def __repr__(self):
         return '<JobAdvertisement {}>'.format(self.title)
