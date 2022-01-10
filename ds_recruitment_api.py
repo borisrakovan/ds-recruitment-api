@@ -7,6 +7,7 @@ from app import routes, models
 
 @app.shell_context_processor
 def make_shell_context():
+    """Used for testing purposes."""
     return {
         'db': db,
         'Candidate': models.Candidate,

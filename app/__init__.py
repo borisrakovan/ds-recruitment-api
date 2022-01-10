@@ -11,7 +11,7 @@ from config import Config
 from app import utils
 
 
-"""Initialize plugins"""
+# Initialize plugins
 db = SQLAlchemy()
 ma = Marshmallow()
 migrate = Migrate()

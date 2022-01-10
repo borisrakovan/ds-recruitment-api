@@ -1,6 +1,5 @@
 import functools
 import typing as t
-from datetime import datetime
 
 from sqlalchemy.sql.schema import Column as SAColumn
 
