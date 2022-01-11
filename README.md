@@ -48,7 +48,7 @@ The Flask API contains several endpoints that are described in this section.
 
 `GET /candidates/<candidate_id>` - returns a single candidate with the given id
 
-`POST /candidates` - accepts a json body with containing data of the candidate to create. The body 
+`POST /candidates` - accepts a json body with data of the candidate to create. The body 
 should be of the following form
 
 ```
@@ -63,7 +63,7 @@ should be of the following form
 
 It returns the newly created candidate.
 
-`PUT /candidates/<int:candidate_id>` - accepts a json body with containing data of the candidate to update. On success 
+`PUT /candidates/<int:candidate_id>` - accepts a json body with data of the candidate to update. On success 
 returns the updated candidate.
 
 `DELETE /candidates/<int:candidate_id>` - deletes the candidate with the given id. Returns a 204 status code on success.
@@ -74,7 +74,7 @@ returns the updated candidate.
 
 `GET /advertisements/<int:advertisement_id>` - returns a single job advertisement with the given id
 
-`POST /advertisements` - accepts a json body with containing data of the job advertisement to create. The body 
+`POST /advertisements` - accepts a json body with data of the job advertisement to create. The body 
 should be of the following form
 
 ```
@@ -88,7 +88,7 @@ should be of the following form
 
 It returns the newly created advertisement.
 
-`PUT /advertisements/<int:advertisement_id>` - accepts a json body with containing data of the job advertisement to 
+`PUT /advertisements/<int:advertisement_id>` - accepts a json body with data of the job advertisement to 
 update. On success returns the updated advertisement.
 
 `DELETE /advertisements/<int:advertisement_id>` - deletes the advertisement with the given id. Returns a 204 status 
